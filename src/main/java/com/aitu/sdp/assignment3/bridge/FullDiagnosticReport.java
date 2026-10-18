@@ -2,7 +2,7 @@ package com.aitu.sdp.assignment3.bridge;
 
 import com.aitu.sdp.assignment2.Computer;
 
-public class FullDiagnosticReport extends ComputerReport {
+public class  FullDiagnosticReport extends ComputerReport {
     public FullDiagnosticReport(ReportExporter exporter) {
         super(exporter);
     }

@@ -9,6 +9,7 @@ public class CustomPCRequest {
     private String ram;
     private String storage;
     private String powerSupply;
+    private String coolingSystem;
     private boolean hasRGB;
 
     public String getEcosystem() { return ecosystem; }
@@ -25,6 +26,8 @@ public class CustomPCRequest {
     public void setStorage(String storage) { this.storage = storage; }
     public String getPowerSupply() { return powerSupply; }
     public void setPowerSupply(String powerSupply) { this.powerSupply = powerSupply; }
+    public String getCoolingSystem() { return coolingSystem; }
+    public void setCoolingSystem(String coolingSystem) { this.coolingSystem = coolingSystem; }
     public boolean isHasRGB() { return hasRGB; }
     public void setHasRGB(boolean hasRGB) { this.hasRGB = hasRGB; }
 }

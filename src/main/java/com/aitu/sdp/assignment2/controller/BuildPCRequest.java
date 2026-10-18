@@ -6,6 +6,7 @@ public class BuildPCRequest {
     private String buildType;
     private String ram;
     private String storage;
+    private String coolingSystem;
     private boolean hasRGB;
 
     public String getEcosystem() {
@@ -38,6 +39,14 @@ public class BuildPCRequest {
 
     public void setStorage(String storage) {
         this.storage = storage;
+    }
+
+    public String getCoolingSystem() {
+        return coolingSystem;
+    }
+
+    public void setCoolingSystem(String coolingSystem) {
+        this.coolingSystem = coolingSystem;
     }
 
     public boolean isHasRGB() {

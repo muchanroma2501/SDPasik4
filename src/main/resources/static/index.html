@@ -3,745 +3,150 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="theme-color" content="#0f172a">
-    <title>PC Configurator</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <style>
-        :root {
-            color-scheme: dark;
-            --page: #0f172a;
-            --card: #1e293b;
-            --card-raised: #243248;
-            --line: #334155;
-            --text: #f1f5f9;
-            --muted: #a8b5c8;
-            --accent: #818cf8;
-            --accent-strong: #6366f1;
-            --positive: #10b981;
-            --negative: #fb7185;
-            --radius: 12px;
-            --pad: 1.25rem;
-        }
-
-        * { box-sizing: border-box; }
-        html { scroll-behavior: smooth; }
-        body {
-            margin: 0;
-            min-height: 100vh;
-            background: var(--page);
-            color: var(--text);
-            font-family: Inter, ui-sans-serif, system-ui, sans-serif;
-            font-size: 15px;
-            line-height: 1.55;
-        }
-
-        button, input, select { font: inherit; }
-        button { color: inherit; }
-        button:focus-visible, select:focus-visible, input:focus-visible {
-            outline: 3px solid #818cf8;
-            outline-offset: 2px;
-        }
-
-        .site-header {
-            border-bottom: 1px solid rgba(148, 163, 184, .14);
-            background: #111b30;
-        }
-        .header-inner, main, .site-footer {
-            width: min(1180px, calc(100% - 40px));
-            margin: 0 auto;
-        }
-        .header-inner { padding: 1.65rem 0; }
-        h1, h2, h3, p { margin-top: 0; }
-        h1 { margin-bottom: .3rem; font-size: clamp(1.65rem, 4vw, 2.1rem); letter-spacing: -.04em; }
-        .subtitle { margin: 0; color: var(--muted); font-size: 1rem; }
-        main { padding: 2rem 0 3rem; }
-
-        .view-switcher {
-            display: inline-flex;
-            gap: 5px;
-            margin-bottom: 1.5rem;
-            padding: 5px;
-            border: 1px solid var(--line);
-            border-radius: 14px;
-            background: #131e32;
-        }
-        .view-toggle {
-            min-height: 46px;
-            padding: .68rem 1.15rem;
-            border: 0;
-            border-radius: 10px;
-            background: transparent;
-            color: var(--muted);
-            font-weight: 600;
-            cursor: pointer;
-            transition: background .16s ease, color .16s ease;
-        }
-        .view-toggle[aria-pressed="true"] {
-            background: var(--accent-strong);
-            color: white;
-        }
-        .view-toggle:hover:not([aria-pressed="true"]) { background: #26344b; color: var(--text); }
-        .view-panel[hidden] { display: none; }
-
-        .section-heading { margin-bottom: 1.1rem; }
-        .section-heading h2 { margin-bottom: .25rem; font-size: 1.35rem; letter-spacing: -.025em; }
-        .section-heading p { margin-bottom: 0; color: var(--muted); }
-        .preset-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; }
-        .card {
-            border: 1px solid var(--line);
-            border-radius: var(--radius);
-            background: var(--card);
-            padding: var(--pad);
-        }
-        .preset-card { display: flex; min-height: 100%; flex-direction: column; }
-        .preset-title { display: flex; align-items: flex-start; gap: .8rem; margin-bottom: 1rem; }
-        .icon-tile {
-            display: grid;
-            width: 42px;
-            height: 42px;
-            flex: 0 0 42px;
-            place-items: center;
-            border: 1px solid rgba(129, 140, 248, .25);
-            border-radius: 11px;
-            background: rgba(99, 102, 241, .13);
-            color: #c7d2fe;
-        }
-        .icon-tile svg { width: 20px; height: 20px; }
-        .preset-title h3 { margin: 0 0 .2rem; font-size: 1.05rem; }
-        .preset-purpose { margin: 0; color: var(--muted); font-size: .88rem; }
-        .spec-list { display: grid; gap: .72rem; margin: 0 0 1.2rem; }
-        .spec-row {
-            display: grid;
-            grid-template-columns: minmax(82px, .7fr) 1.3fr;
-            gap: .6rem;
-            padding-bottom: .65rem;
-            border-bottom: 1px solid rgba(148, 163, 184, .12);
-        }
-        .spec-row dt { color: var(--muted); font-size: .86rem; }
-        .spec-row dd { margin: 0; font-size: .9rem; font-weight: 500; overflow-wrap: anywhere; }
-        .preset-action { width: 100%; margin-top: auto; }
-
-        .builder-layout {
-            display: grid;
-            grid-template-columns: minmax(0, 1fr) 320px;
-            align-items: start;
-            gap: 1.25rem;
-        }
-        .builder-form { display: grid; gap: 1.25rem; }
-        .step { padding: var(--pad); }
-        .step-heading { display: flex; align-items: flex-start; gap: .8rem; margin-bottom: 1rem; }
-        .step-number {
-            display: grid;
-            width: 34px;
-            height: 34px;
-            flex: 0 0 34px;
-            place-items: center;
-            border-radius: 10px;
-            background: rgba(99, 102, 241, .16);
-            color: #c7d2fe;
-            font-size: .85rem;
-            font-weight: 700;
-        }
-        .step-heading h3 { margin: .15rem 0 .15rem; font-size: 1.02rem; }
-        .step-heading p { margin: 0; color: var(--muted); font-size: .88rem; }
-        .platform-grid, .field-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .8rem; }
-        .platform-option {
-            display: flex;
-            min-height: 58px;
-            align-items: center;
-            gap: .7rem;
-            padding: .8rem .9rem;
-            border: 1px solid var(--line);
-            border-radius: 10px;
-            background: #182438;
-            cursor: pointer;
-        }
-        .platform-option:has(input:checked) { border-color: var(--accent); background: rgba(99, 102, 241, .12); }
-        .platform-option input { width: 18px; height: 18px; accent-color: var(--accent-strong); }
-        .platform-option strong { font-size: .92rem; }
-        .field { display: grid; gap: .35rem; color: #dbe4f0; font-size: .87rem; font-weight: 500; }
-        .field select {
-            width: 100%;
-            min-height: 46px;
-            padding: .65rem .75rem;
-            border: 1px solid var(--line);
-            border-radius: 9px;
-            background: #111c30;
-            color: var(--text);
-        }
-        .rgb-field {
-            display: flex;
-            min-height: 46px;
-            align-items: center;
-            justify-content: space-between;
-            gap: 1rem;
-            margin-top: .9rem;
-            padding: .5rem .2rem;
-            color: #dbe4f0;
-        }
-        .rgb-field input { width: 19px; height: 19px; accent-color: var(--accent-strong); }
-        .compatibility-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .7rem; }
-        .status-badge {
-            display: flex;
-            min-height: 69px;
-            align-items: flex-start;
-            gap: .65rem;
-            padding: .72rem;
-            border: 1px solid var(--line);
-            border-radius: 10px;
-            background: #182438;
-        }
-        .status-badge svg { width: 18px; height: 18px; flex: 0 0 18px; margin-top: 2px; color: var(--muted); }
-        .status-badge strong { display: block; margin-bottom: .1rem; font-size: .78rem; }
-        .status-badge span { display: block; color: var(--muted); font-size: .78rem; line-height: 1.35; }
-        .status-badge.is-good { border-color: rgba(16, 185, 129, .45); }
-        .status-badge.is-good svg, .status-badge.is-good span { color: #6ee7b7; }
-        .status-badge.is-bad { border-color: rgba(251, 113, 133, .5); }
-        .status-badge.is-bad svg, .status-badge.is-bad span { color: #fda4af; }
-        .build-action-row { display: flex; align-items: center; gap: .8rem; margin-top: 1rem; }
-        .primary-button, .secondary-button {
-            display: inline-flex;
-            min-height: 46px;
-            align-items: center;
-            justify-content: center;
-            gap: .55rem;
-            padding: .7rem 1rem;
-            border: 1px solid transparent;
-            border-radius: 9px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background .16s ease, border-color .16s ease;
-        }
-        .primary-button { background: var(--accent-strong); color: white; }
-        .primary-button:hover:not(:disabled) { background: #5558e8; }
-        .primary-button:disabled { cursor: not-allowed; opacity: .52; }
-        .secondary-button { border-color: var(--line); background: #202e43; color: var(--text); }
-        .secondary-button:hover { background: #2a3a52; }
-        .primary-button svg, .secondary-button svg { width: 18px; height: 18px; }
-        .build-notice { margin: 0; color: #fda4af; font-size: .84rem; }
-        .build-notice:empty { display: none; }
-        .result-card { margin-top: .9rem; border: 1px solid rgba(16, 185, 129, .38); border-radius: 10px; background: rgba(16, 185, 129, .08); padding: 1rem; }
-        .result-card[hidden] { display: none; }
-        .result-card h4 { display: flex; align-items: center; gap: .5rem; margin: 0 0 .6rem; font-size: .95rem; }
-        .result-card h4 svg { width: 18px; color: #6ee7b7; }
-        .result-card p { margin: 0 0 .5rem; color: #d1fae5; font-size: .88rem; }
-        .result-specs { display: grid; gap: .35rem; margin: .7rem 0 0; }
-        .result-specs div { display: flex; justify-content: space-between; gap: .75rem; border-top: 1px solid rgba(148, 163, 184, .14); padding-top: .35rem; font-size: .82rem; }
-        .result-specs dt { color: var(--muted); }
-        .result-specs dd { margin: 0; text-align: right; overflow-wrap: anywhere; }
-
-        .summary-column { position: sticky; top: 20px; display: grid; gap: 1rem; }
-        .summary-card h3, .history-card h3 { margin-bottom: 1rem; font-size: 1.05rem; }
-        .summary-list { display: grid; gap: .65rem; margin: 0 0 1rem; }
-        .summary-list div { display: grid; grid-template-columns: 82px minmax(0, 1fr); gap: .65rem; }
-        .summary-list dt { color: var(--muted); font-size: .84rem; }
-        .summary-list dd { margin: 0; font-size: .84rem; font-weight: 500; overflow-wrap: anywhere; }
-        .summary-status { border-top: 1px solid var(--line); padding-top: .9rem; }
-        .summary-status .compatibility-grid { grid-template-columns: 1fr; }
-        .summary-status .status-badge { min-height: 0; align-items: center; padding: .55rem .65rem; }
-        .summary-status .status-badge strong { display: inline; margin-right: .3rem; }
-        .summary-status .status-badge span { display: inline; }
-        .history-list { display: grid; gap: .55rem; margin: 0; padding: 0; list-style: none; }
-        .history-list li { display: flex; gap: .5rem; color: var(--muted); font-size: .82rem; }
-        .history-list svg { width: 16px; height: 16px; flex: 0 0 16px; color: var(--accent); }
-        .empty-history { color: var(--muted); font-size: .85rem; }
-
-        .report-section { margin-top: 2rem; }
-        .report-controls { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .8rem; }
-        .report-output {
-            margin-top: 1rem;
-            overflow: auto;
-            border: 1px solid var(--line);
-            border-radius: 10px;
-            background: #111827;
-        }
-        .report-output[hidden], .report-json[hidden], .report-html[hidden] { display: none; }
-        .report-json { max-height: 420px; margin: 0; padding: 1rem; color: #c7d2fe; font-size: .84rem; white-space: pre-wrap; overflow-wrap: anywhere; }
-        .report-html { display: block; width: 100%; height: 420px; border: 0; background: white; }
-        .report-status { min-height: 1.4rem; margin: .7rem 0 0; color: var(--muted); font-size: .86rem; }
-        .project-info { margin-top: 3rem; border-top: 1px solid var(--line); padding-top: 1.8rem; }
-        .project-info h2 { margin-bottom: .6rem; font-size: 1.15rem; }
-        .project-info p, .project-info li { color: var(--muted); font-size: .88rem; }
-        .project-info ul { display: grid; gap: .35rem; padding-left: 1.2rem; }
-        .site-footer { padding: 0 0 1.5rem; color: var(--muted); font-size: .82rem; }
-
-        @media (max-width: 1023px) {
-            .builder-layout { grid-template-columns: 1fr; }
-            .summary-column { position: static; grid-row: 2; }
-            .summary-card { order: 0; }
-            .history-card { order: 1; }
-        }
-        @media (max-width: 760px) {
-            .header-inner, main, .site-footer { width: min(100% - 28px, 600px); }
-            .header-inner { padding: 1.35rem 0; }
-            main { padding-top: 1.35rem; }
-            .preset-grid { grid-template-columns: 1fr; }
-            .preset-card { min-height: auto; }
-            .compatibility-grid { grid-template-columns: 1fr; }
-            .status-badge { min-height: 0; align-items: center; }
-            .report-controls { grid-template-columns: 1fr; }
-        }
-        @media (max-width: 520px) {
-            :root { --pad: 1rem; }
-            .view-switcher { display: grid; width: 100%; grid-template-columns: 1fr 1fr; }
-            .view-toggle { padding: .65rem .45rem; font-size: .9rem; }
-            .platform-grid, .field-grid { grid-template-columns: 1fr; }
-            .build-action-row { align-items: stretch; flex-direction: column; }
-            .build-action-row .primary-button { width: 100%; }
-            .build-notice { min-height: 0; }
-        }
-        @media (prefers-reduced-motion: reduce) {
-            *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; }
-        }
-    </style>
+    <meta name="theme-color" content="#0b111a">
+    <title>PC Build Studio</title>
+    <link rel="stylesheet" href="/css/app.css">
+    <script src="/js/app.js" defer></script>
 </head>
 <body>
-<header class="site-header">
-    <div class="header-inner">
-        <h1>PC Configurator</h1>
-        <p class="subtitle">Выберите готовую сборку или настройте свою</p>
-    </div>
+<header class="topbar">
+    <a class="brand" href="#" aria-label="PC Build Studio — главная">
+        <span class="brand-mark" aria-hidden="true">PB</span>
+        <span><strong>PC Build Studio</strong><small>Конфигуратор сборок</small></span>
+    </a>
+    <nav class="top-nav" aria-label="Основная навигация">
+        <a href="#presets">Готовые сборки</a>
+        <a href="#builder">Конфигуратор</a>
+        <a href="#reports">Отчёты</a>
+    </nav>
+    <span class="system-pill"><span class="online-dot"></span>Система готова</span>
 </header>
 
 <main>
-    <nav class="view-switcher" aria-label="Выбор режима конфигуратора">
-        <button class="view-toggle" type="button" data-view="presets" aria-pressed="true">Готовые сборки</button>
-        <button class="view-toggle" type="button" data-view="custom" aria-pressed="false">Своя конфигурация</button>
-    </nav>
-
-    <section id="presets" class="view-panel" aria-labelledby="presets-title">
-        <div class="section-heading">
-            <h2 id="presets-title">Готовые сборки</h2>
-            <p>Выберите подходящий вариант и при необходимости измените его компоненты.</p>
+    <section class="hero">
+        <div class="hero-copy">
+            <p class="eyebrow">СОБЕРИТЕ СИСТЕМУ С УВЕРЕННОСТЬЮ</p>
+            <h1>Ваша следующая сборка<br><span>начинается здесь.</span></h1>
+            <p class="hero-description">Подберите компоненты, проверьте конфигурацию на сервере и сохраните результат.</p>
+            <a class="button button-primary" href="#builder">Создать конфигурацию <span aria-hidden="true">→</span></a>
         </div>
-        <div id="preset-grid" class="preset-grid" aria-live="polite"></div>
+        <div class="hero-art" aria-hidden="true">
+            <div class="chip"><span>BUILD</span><strong>STUDIO</strong><i></i></div>
+            <div class="art-line art-line-one"></div><div class="art-line art-line-two"></div>
+        </div>
     </section>
 
-    <section id="custom" class="view-panel" aria-labelledby="builder-title" hidden>
-        <div class="section-heading">
-            <h2 id="builder-title">Своя конфигурация</h2>
-            <p>Настройте компоненты — проверка совместимости обновляется автоматически.</p>
+    <section id="presets" class="section-block">
+        <div class="section-title">
+            <div><p class="eyebrow">СТАРТУЙТЕ БЫСТРО</p><h2>Готовые сборки</h2></div>
+            <p>Проверенные основы для игр, работы и творчества</p>
         </div>
+        <div id="preset-grid" class="preset-grid" aria-live="polite">
+            <p class="loading-card">Загружаем готовые конфигурации…</p>
+        </div>
+    </section>
 
-        <div class="builder-layout">
-            <form id="custom-form" class="builder-form">
-                <section class="card step" aria-labelledby="platform-title">
-                    <div class="step-heading">
-                        <span class="step-number">01</span>
-                        <div><h3 id="platform-title">Платформа</h3><p>Выберите семейство совместимых компонентов.</p></div>
-                    </div>
-                    <div class="platform-grid">
-                        <label class="platform-option"><input type="radio" name="ecosystem" value="intel_nvidia" checked><strong>Intel + NVIDIA</strong></label>
-                        <label class="platform-option"><input type="radio" name="ecosystem" value="amd"><strong>AMD</strong></label>
-                    </div>
-                </section>
+    <section id="builder" class="section-block">
+        <div class="section-title">
+            <div><p class="eyebrow">ВАШИ КОМПОНЕНТЫ</p><h2>Конфигуратор ПК</h2></div>
+            <p>Совместимость проверяется сервером по реальному каталогу</p>
+        </div>
+        <div class="studio-layout">
+            <form id="custom-form" class="builder-panel">
+                <fieldset class="platform-picker">
+                    <legend>Платформа</legend>
+                    <label class="platform-choice"><input type="radio" name="ecosystem" value="intel_nvidia" checked><span><b>Intel + NVIDIA</b><small>Платформа Intel</small></span></label>
+                    <label class="platform-choice"><input type="radio" name="ecosystem" value="amd"><span><b>AMD</b><small>Единая экосистема AMD</small></span></label>
+                </fieldset>
 
-                <section class="card step" aria-labelledby="components-title">
-                    <div class="step-heading">
-                        <span class="step-number">02</span>
-                        <div><h3 id="components-title">Компоненты</h3><p>Выберите детали для вашей сборки.</p></div>
-                    </div>
-                    <div class="field-grid">
-                        <label class="field">Процессор<select id="cpu" name="cpu" required></select></label>
-                        <label class="field">Видеокарта<select id="gpu" name="gpu" required></select></label>
-                        <label class="field">Материнская плата<select id="motherboard" name="motherboard" required></select></label>
-                        <label class="field">Оперативная память<select id="ram" name="ram" required></select></label>
-                        <label class="field">Накопитель<select id="storage" name="storage" required></select></label>
-                        <label class="field">Блок питания<select id="psu" name="powerSupply" required></select></label>
-                    </div>
-                    <label class="rgb-field"><span>Подсветка корпуса</span><input id="rgb" name="hasRGB" type="checkbox" checked></label>
-                </section>
+                <div class="form-heading"><span class="step-index">01</span><div><h3>Основные компоненты</h3><p>Выберите модели из каталога</p></div></div>
+                <div class="component-grid">
+                    <label class="field">Процессор <select id="cpu" name="cpu" required></select></label>
+                    <label class="field">Видеокарта <select id="gpu" name="gpu" required></select></label>
+                    <label class="field">Материнская плата <select id="motherboard" name="motherboard" required></select></label>
+                    <label class="field">Блок питания <select id="psu" name="powerSupply" required></select></label>
+                </div>
+                <div class="form-heading secondary-heading"><span class="step-index">02</span><div><h3>Память и охлаждение</h3><p>Настройте остальные компоненты</p></div></div>
+                <div class="component-grid">
+                    <label class="field">Оперативная память <select id="ram" name="ram" required></select></label>
+                    <label class="field">Накопитель <select id="storage" name="storage" required></select></label>
+                    <label class="field">Охлаждение <select id="cooling" name="coolingSystem"></select></label>
+                </div>
+                <label class="toggle-field"><span><b>RGB-подсветка</b><small>Подсветка корпуса и компонентов</small></span><input id="rgb" name="hasRGB" type="checkbox"></label>
 
-                <section class="card step" aria-labelledby="compatibility-title">
-                    <div class="step-heading">
-                        <span class="step-number">03</span>
-                        <div><h3 id="compatibility-title">Проверка совместимости</h3><p>Мощность, сокет и выбранная платформа.</p></div>
+                <div class="diagnostics-panel" aria-labelledby="diagnostics-title">
+                    <div class="diagnostic-heading">
+                        <div><p class="eyebrow">СЕРВЕРНАЯ ПРОВЕРКА</p><h3 id="diagnostics-title">Диагностика конфигурации</h3></div>
+                        <span id="overall-status" class="status-chip status-pending">ОЖИДАНИЕ</span>
                     </div>
-                    <div id="compatibility" class="compatibility-grid" aria-live="polite"></div>
-                    <div class="build-action-row">
-                        <button id="submit" class="primary-button" type="submit" disabled><i data-lucide="cpu"></i>Собрать ПК</button>
-                        <p id="build-notice" class="build-notice" role="status" aria-live="polite">Загрузка каталога компонентов…</p>
+                    <p id="diagnostics-loading" class="muted-line" role="status" aria-live="polite">Загрузка каталога…</p>
+                    <div id="power-summary" class="power-summary" hidden></div>
+                    <ul id="diagnostic-checks" class="diagnostic-checks" aria-live="polite"></ul>
+                    <div class="action-row">
+                        <button id="build-button" class="button button-primary" type="submit" disabled>Собрать и проверить</button>
+                        <p id="build-notice" class="form-notice" role="status" aria-live="polite"></p>
                     </div>
-                    <section id="result" class="result-card" aria-labelledby="result-title" hidden>
-                        <h4 id="result-title"><i data-lucide="circle-check"></i>04 Результат</h4>
-                        <p id="result-status"></p>
-                        <dl id="result-specs" class="result-specs"></dl>
-                    </section>
+                </div>
+
+                <section id="build-result" class="build-result" hidden aria-labelledby="build-result-title">
+                    <div class="result-heading"><div><p class="eyebrow">РЕЗУЛЬТАТ</p><h3 id="build-result-title">Сборка готова</h3></div><span class="result-check" aria-hidden="true">✓</span></div>
+                    <p id="result-status" class="muted-line"></p>
+                    <dl id="result-specs" class="result-specs"></dl>
                 </section>
             </form>
 
-            <aside class="summary-column" aria-label="Сводка выбранной сборки">
-                <section class="card summary-card">
-                    <h3>Ваша сборка</h3>
-                    <dl class="summary-list">
+            <aside class="side-column">
+                <section class="side-card">
+                    <div class="side-card-heading"><span class="side-icon">⌘</span><div><p class="eyebrow">LIVE CONFIGURATION</p><h3>Текущий выбор</h3></div></div>
+                    <dl class="selection-summary">
                         <div><dt>CPU</dt><dd id="summary-cpu">—</dd></div>
                         <div><dt>GPU</dt><dd id="summary-gpu">—</dd></div>
-                        <div><dt>RAM</dt><dd id="summary-ram">—</dd></div>
-                        <div><dt>Накопитель</dt><dd id="summary-storage">—</dd></div>
-                        <div><dt>Блок питания</dt><dd id="summary-psu">—</dd></div>
+                        <div><dt>Материнская плата</dt><dd id="summary-motherboard">—</dd></div>
+                        <div><dt>Питание</dt><dd id="summary-psu">—</dd></div>
                     </dl>
-                    <div class="summary-status">
-                        <div id="summary-compatibility" class="compatibility-grid"></div>
-                    </div>
+                    <p class="summary-footnote">Предварительная сводка. Решение о совместимости принимает сервер.</p>
                 </section>
-                <section class="card history-card">
-                    <h3>История действий</h3>
-                    <ol id="history-list" class="history-list"><li class="empty-history">Пока действий нет.</li></ol>
+                <section class="side-card">
+                    <div class="side-card-heading"><span class="side-icon history-icon">↻</span><div><p class="eyebrow">LOCAL HISTORY</p><h3>Недавние действия</h3></div></div>
+                    <ol id="history-list" class="history-list"><li class="empty-history">История пока пуста.</li></ol>
+                    <button id="clear-history" class="text-button" type="button">Очистить историю</button>
                 </section>
             </aside>
         </div>
     </section>
 
-    <section id="bridge-report" class="card report-section" aria-labelledby="report-title">
-        <div class="section-heading">
-            <h2 id="report-title">Спецификация отчёта</h2>
-            <p>Выберите состав отчёта и формат экспорта.</p>
+    <section id="reports" class="section-block">
+        <div class="section-title">
+            <div><p class="eyebrow">BRIDGE REPORTS</p><h2>Отчёты по вашей сборке</h2></div>
+            <p>Экспорт текущего выбора в HTML или JSON</p>
         </div>
-        <div class="report-controls">
-            <label class="field">Тип отчёта
-                <select id="bridge-report-type" name="reportType">
-                    <option value="summary">Краткая спецификация</option>
-                    <option value="full">Полная диагностика</option>
-                </select>
-            </label>
-            <label class="field">Формат
-                <select id="bridge-report-format" name="format">
-                    <option value="html">HTML</option>
-                    <option value="json">JSON</option>
-                </select>
-            </label>
-        </div>
-        <button id="bridge-report-generate" class="secondary-button" type="button" style="margin-top: .9rem"><i data-lucide="file-down"></i>Сформировать отчёт</button>
-        <p id="bridge-report-status" class="report-status" role="status" aria-live="polite">Отчёт ещё не сформирован.</p>
-        <div id="bridge-report-output" class="report-output" hidden>
-            <pre id="bridge-report-json" class="report-json" hidden></pre>
-            <iframe id="bridge-report-html" class="report-html" title="Предпросмотр HTML-отчёта" sandbox="" hidden></iframe>
+        <div class="report-panel">
+            <div class="report-options">
+                <label class="field">Содержание отчёта<select id="report-type"><option value="summary">Краткая спецификация</option><option value="full">Полный отчёт</option></select></label>
+                <label class="field">Формат<select id="report-format"><option value="html">HTML</option><option value="json">JSON</option></select></label>
+                <button id="generate-report" class="button button-secondary" type="button">Сформировать отчёт</button>
+            </div>
+            <p id="report-status" class="muted-line" role="status" aria-live="polite">Выберите компоненты и сформируйте отчёт.</p>
+            <div id="report-output" class="report-output" hidden>
+                <div class="report-toolbar"><strong>Предпросмотр</strong><button id="download-report" class="text-button" type="button">Скачать файл</button></div>
+                <pre id="report-json" hidden></pre>
+                <iframe id="report-html" title="Предпросмотр HTML-отчёта" sandbox="" hidden></iframe>
+            </div>
         </div>
     </section>
 
-    <section class="project-info" aria-labelledby="project-info-title">
-        <h2 id="project-info-title">Как устроен проект</h2>
-        <p>Конфигуратор объединяет три задания по шаблонам проектирования:</p>
-        <ul>
-            <li><strong>Задания 1 и 2 — Factory Method, Abstract Factory и Builder:</strong> создают семейства совместимых компонентов и проверенные конфигурации ПК.</li>
-            <li><strong>Задание 3 — Bridge:</strong> отделяет тип отчёта от формата экспорта; JSON- и HTML-экспортёры можно менять независимо.</li>
-            <li><strong>Чистый код:</strong> разделение ответственности, программирование через интерфейсы, единый каталог компонентов, инкапсуляция данных и проверка конфигурации до сборки.</li>
-        </ul>
+    <section id="stress-tests" class="section-block">
+        <div class="section-title">
+            <div><p class="eyebrow">ДЕМОНСТРАЦИОННАЯ ПОДСИСТЕМА</p><h2>Стресс-тест системы</h2></div>
+            <p>Отдельный Assignment 4 Facade: симуляция CPU, GPU и температурного контроля</p>
+        </div>
+        <div class="report-panel stress-panel">
+            <button id="stress-test-button" class="button button-secondary" type="button">Запустить стресс-тест выбранной сборки</button>
+            <p id="stress-status" class="muted-line" role="status" aria-live="polite">Тест использует текущую конфигурацию.</p>
+            <iframe id="stress-report" title="Отчёт стресс-теста" sandbox="" hidden></iframe>
+        </div>
     </section>
 </main>
-<footer class="site-footer">PC Configurator</footer>
-
-<script>
-    const $ = (selector, root = document) => root.querySelector(selector);
-    const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
-    const catalog = { intel_nvidia: null, amd: null };
-    let activeCatalog = null;
-    let recentActions = [];
-
-    function escapeHtml(value) {
-        return String(value ?? "").replace(/[&<>"']/g, character => ({
-            "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
-        })[character]);
-    }
-
-    function addHistory(message) {
-        recentActions.unshift(message);
-        recentActions = recentActions.slice(0, 5);
-        const list = $("#history-list");
-        list.innerHTML = recentActions.map(item =>
-            `<li><i data-lucide="check"></i><span>${escapeHtml(item)}</span></li>`).join("");
-        if (window.lucide) lucide.createIcons();
-    }
-
-    function setOptions(id, items, getValue = item => item.model ?? item, getLabel = item => item.model ?? item) {
-        const select = $("#" + id);
-        select.replaceChildren(...items.map(item => {
-            const option = document.createElement("option");
-            option.value = getValue(item);
-            option.textContent = getLabel(item);
-            return option;
-        }));
-    }
-
-    async function fetchJson(url, options) {
-        const response = await fetch(url, options);
-        const data = await response.json();
-        if (!response.ok) throw new Error(data.message || `Ошибка запроса (${response.status})`);
-        return data;
-    }
-
-    async function loadCatalog(ecosystem, preserve = null) {
-        if (!catalog[ecosystem]) {
-            catalog[ecosystem] = await fetchJson(`/api/pc/catalog?ecosystem=${encodeURIComponent(ecosystem)}`);
-        }
-        activeCatalog = catalog[ecosystem];
-        setOptions("cpu", activeCatalog.cpus, item => item.model, item => `${item.model} · ${item.tdpWatts} Вт`);
-        setOptions("gpu", activeCatalog.gpus, item => item.model, item => `${item.model} · ${item.tdpWatts} Вт`);
-        setOptions("motherboard", activeCatalog.motherboards, item => item.model, item => `${item.model} · ${item.socket}`);
-        setOptions("ram", activeCatalog.ram);
-        setOptions("storage", activeCatalog.storage);
-        setOptions("psu", activeCatalog.powerSupplies);
-        if (preserve) {
-            ["cpu", "gpu", "motherboard", "ram", "storage", "psu"].forEach(id => {
-                const select = $("#" + id);
-                if ([...select.options].some(option => option.value === preserve[id])) {
-                    select.value = preserve[id];
-                }
-            });
-        }
-        refreshBuild();
-    }
-
-    function statusMarkup(icon, label, value, state = "neutral") {
-        const stateClass = state === "good" ? " is-good" : state === "bad" ? " is-bad" : "";
-        return `<div class="status-badge${stateClass}"><i data-lucide="${icon}"></i><div><strong>${escapeHtml(label)}</strong><span>${escapeHtml(value)}</span></div></div>`;
-    }
-
-    function getBuildState() {
-        const ecosystem = $('[name="ecosystem"]:checked').value;
-        const cpu = activeCatalog?.cpus.find(item => item.model === $("#cpu").value);
-        const gpu = activeCatalog?.gpus.find(item => item.model === $("#gpu").value);
-        const motherboard = activeCatalog?.motherboards.find(item => item.model === $("#motherboard").value);
-        const psuWattage = Number.parseInt($("#psu").value || "", 10);
-        const requiredPower = cpu && gpu ? cpu.tdpWatts + gpu.tdpWatts + 150 : null;
-        const enoughPower = requiredPower !== null && Number.isFinite(psuWattage) && psuWattage >= requiredPower;
-        const compatibleSocket = Boolean(cpu && motherboard && cpu.socket === motherboard.socket);
-        const platform = ecosystem === "amd" ? "AMD" : "Intel + NVIDIA";
-        return { ecosystem, cpu, gpu, motherboard, psuWattage, requiredPower, enoughPower, compatibleSocket, platform };
-    }
-
-    function refreshBuild() {
-        if (!activeCatalog) return;
-        const state = getBuildState();
-        const errorMessages = [];
-        if (!state.enoughPower) errorMessages.push("Недостаточная мощность блока питания.");
-        if (!state.compatibleSocket) errorMessages.push("Сокет процессора и платы не совпадает.");
-
-        const compatibilityMarkup = [
-            statusMarkup("zap", "Мощность БП", state.requiredPower === null
-                ? "Выберите CPU и GPU"
-                : `${state.enoughPower ? "Достаточно" : "Недостаточно"} · ${state.psuWattage || 0} / ${state.requiredPower} Вт`,
-            state.requiredPower === null ? "neutral" : state.enoughPower ? "good" : "bad"),
-            statusMarkup("cable", "Сокет", state.cpu && state.motherboard
-                ? `${state.compatibleSocket ? "Совместим" : "Не совместим"} · ${state.cpu.socket} / ${state.motherboard.socket}`
-                : "Выберите процессор и плату",
-            state.cpu && state.motherboard ? state.compatibleSocket ? "good" : "bad" : "neutral"),
-            statusMarkup(state.ecosystem === "amd" ? "cpu" : "blocks", "Платформа", state.platform)
-        ].join("");
-        $("#compatibility").innerHTML = compatibilityMarkup;
-        $("#summary-compatibility").innerHTML = compatibilityMarkup;
-
-        $("#summary-cpu").textContent = state.cpu?.model || "—";
-        $("#summary-gpu").textContent = state.gpu?.model || "—";
-        $("#summary-ram").textContent = $("#ram").value || "—";
-        $("#summary-storage").textContent = $("#storage").value || "—";
-        $("#summary-psu").textContent = $("#psu").value || "—";
-
-        const submit = $("#submit");
-        submit.disabled = errorMessages.length > 0;
-        $("#build-notice").textContent = errorMessages.join(" ") || "Конфигурация готова к сборке.";
-        $("#build-notice").style.color = errorMessages.length ? "var(--negative)" : "var(--positive)";
-        if (window.lucide) lucide.createIcons();
-    }
-
-    function switchView(view) {
-        $$(".view-toggle").forEach(button => button.setAttribute("aria-pressed", String(button.dataset.view === view)));
-        $$(".view-panel").forEach(panel => { panel.hidden = panel.id !== view; });
-    }
-
-    function presetPurpose(name) {
-        const normalized = name.toLowerCase();
-        if (normalized.includes("gaming") || normalized.includes("игр")) return { label: "Для игр", icon: "gamepad-2" };
-        if (normalized.includes("budget") || normalized.includes("office")) return { label: "Для работы и повседневных задач", icon: "briefcase-business" };
-        if (normalized.includes("creator") || normalized.includes("workstation")) return { label: "Для создания контента", icon: "layers-2" };
-        return { label: "Универсальная сборка", icon: "computer" };
-    }
-
-    function presetSpec(preset, label) {
-        const value = preset.specs?.[label];
-        return value || "—";
-    }
-
-    async function loadPresets() {
-        const presets = await fetchJson("/api/pc/presets");
-        $("#preset-grid").innerHTML = presets.map((preset, index) => {
-            const purpose = presetPurpose(preset.name || "");
-            const specs = [
-                ["Процессор", presetSpec(preset, "CPU")],
-                ["Видеокарта", presetSpec(preset, "GPU")],
-                ["Оперативная память", presetSpec(preset, "RAM")],
-                ["Мощность БП", presetSpec(preset, "Power Supply")],
-                ["Цена", "Не указана"]
-            ];
-            return `<article class="card preset-card">
-                <div class="preset-title">
-                    <span class="icon-tile"><i data-lucide="${purpose.icon}"></i></span>
-                    <div><h3>${escapeHtml(preset.name || `Сборка ${index + 1}`)}</h3><p class="preset-purpose">${escapeHtml(purpose.label)}</p></div>
-                </div>
-                <dl class="spec-list">${specs.map(([label, value]) => `<div class="spec-row"><dt>${escapeHtml(label)}</dt><dd>${escapeHtml(value)}</dd></div>`).join("")}</dl>
-                <button class="primary-button preset-action" type="button" data-preset-index="${index}"><i data-lucide="sliders-horizontal"></i>Настроить эту сборку</button>
-            </article>`;
-        }).join("");
-        if (window.lucide) lucide.createIcons();
-        $$(".preset-action").forEach(button => {
-            button.addEventListener("click", async () => {
-                try {
-                    await activatePreset(presets[Number(button.dataset.presetIndex)]);
-                } catch (error) {
-                    switchView("custom");
-                    $("#build-notice").textContent = error.message || "Не удалось применить готовую сборку.";
-                }
-            });
-        });
-    }
-
-    async function activatePreset(preset) {
-        const presetCpu = preset.specs?.CPU;
-        const matchedEcosystem = ["intel_nvidia", "amd"].find(ecosystem =>
-            catalog[ecosystem]?.cpus.some(item => item.model === presetCpu));
-        let ecosystem = matchedEcosystem;
-        if (!ecosystem) {
-            for (const candidate of ["intel_nvidia", "amd"]) {
-                if (!catalog[candidate]) {
-                    catalog[candidate] = await fetchJson(`/api/pc/catalog?ecosystem=${candidate}`);
-                }
-                if (catalog[candidate].cpus.some(item => item.model === presetCpu)) {
-                    ecosystem = candidate;
-                    break;
-                }
-            }
-        }
-        if (!ecosystem) {
-            $("#build-notice").textContent = "Не удалось определить платформу готовой сборки.";
-            switchView("custom");
-            return;
-        }
-        const saved = {
-            cpu: preset.specs.CPU,
-            gpu: preset.specs.GPU,
-            motherboard: preset.specs.Motherboard,
-            ram: preset.specs.RAM,
-            storage: preset.specs.Storage,
-            psu: preset.specs["Power Supply"]
-        };
-        $(`[name="ecosystem"][value="${ecosystem}"]`).checked = true;
-        await loadCatalog(ecosystem, saved);
-        $("#rgb").checked = preset.specs["RGB Lighting"] === "Enabled";
-        refreshBuild();
-        switchView("custom");
-        addHistory(`Выбрана готовая сборка «${preset.name}».`);
-    }
-
-    function renderBuild(result) {
-        const resultCard = $("#result");
-        const specs = result.specs || {};
-        $("#result-status").textContent = result.validationStatus || "Сборка создана.";
-        $("#result-specs").innerHTML = Object.entries(specs).map(([label, value]) =>
-            `<div><dt>${escapeHtml(label)}</dt><dd>${escapeHtml(value)}</dd></div>`).join("");
-        resultCard.hidden = false;
-        if (window.lucide) lucide.createIcons();
-    }
-
-    async function submitBuild(event) {
-        event.preventDefault();
-        const button = $("#submit");
-        if (button.disabled) return;
-        button.disabled = true;
-        $("#build-notice").textContent = "Собираем и проверяем конфигурацию…";
-        const request = {
-            ecosystem: $('[name="ecosystem"]:checked').value,
-            cpu: $("#cpu").value,
-            gpu: $("#gpu").value,
-            motherboard: $("#motherboard").value,
-            ram: $("#ram").value,
-            storage: $("#storage").value,
-            powerSupply: $("#psu").value,
-            hasRGB: $("#rgb").checked
-        };
-        try {
-            const result = await fetchJson("/api/pc/custom", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(request)
-            });
-            renderBuild(result);
-            $("#build-notice").textContent = "Сборка успешно проверена.";
-            $("#build-notice").style.color = "var(--positive)";
-            addHistory("Сборка успешно проверена.");
-        } catch (error) {
-            $("#build-notice").textContent = error.message || "Не удалось собрать ПК.";
-            $("#build-notice").style.color = "var(--negative)";
-        } finally {
-            refreshBuild();
-        }
-    }
-
-    async function generateReport() {
-        const button = $("#bridge-report-generate");
-        const status = $("#bridge-report-status");
-        const output = $("#bridge-report-output");
-        const jsonOutput = $("#bridge-report-json");
-        const htmlOutput = $("#bridge-report-html");
-        const params = new URLSearchParams({
-            reportType: $("#bridge-report-type").value,
-            format: $("#bridge-report-format").value
-        });
-        button.disabled = true;
-        status.textContent = "Формируем отчёт…";
-        output.hidden = true;
-        jsonOutput.hidden = true;
-        htmlOutput.hidden = true;
-        try {
-            const response = await fetch(`/api/reports/export?${params}`);
-            const content = await response.text();
-            if (!response.ok) throw new Error(`Не удалось сформировать отчёт (ошибка ${response.status}).`);
-            output.hidden = false;
-            if (params.get("format") === "html") {
-                htmlOutput.srcdoc = content;
-                htmlOutput.hidden = false;
-            } else {
-                jsonOutput.textContent = JSON.stringify(JSON.parse(content), null, 2);
-                jsonOutput.hidden = false;
-            }
-            status.textContent = "Отчёт готов.";
-            addHistory("Сформирован отчёт спецификации.");
-        } catch (error) {
-            status.textContent = error.message || "Не удалось сформировать отчёт.";
-        } finally {
-            button.disabled = false;
-        }
-    }
-
-    $$(".view-toggle").forEach(button => button.addEventListener("click", () => switchView(button.dataset.view)));
-    $$('[name="ecosystem"]').forEach(input => input.addEventListener("change", async event => {
-        try {
-            await loadCatalog(event.target.value);
-            addHistory(`Выбрана платформа: ${event.target.value === "amd" ? "AMD" : "Intel + NVIDIA"}.`);
-        } catch (error) {
-            $("#build-notice").textContent = error.message || "Не удалось загрузить каталог компонентов.";
-        }
-    }));
-    ["cpu", "gpu", "motherboard", "ram", "storage", "psu", "rgb"].forEach(id =>
-        $("#" + id).addEventListener("change", refreshBuild));
-    $("#custom-form").addEventListener("submit", submitBuild);
-    $("#bridge-report-generate").addEventListener("click", generateReport);
-
-    Promise.allSettled([loadCatalog("intel_nvidia"), loadPresets()])
-        .then(results => {
-            if (results.every(result => result.status === "fulfilled")) {
-                addHistory("Конфигуратор готов к работе.");
-                return;
-            }
-            const failed = results.find(result => result.status === "rejected");
-            $("#build-notice").textContent = failed.reason?.message || "Не удалось загрузить данные конфигуратора.";
-            if (results[1].status === "rejected") {
-                $("#preset-grid").innerHTML = `<p class="report-status">${escapeHtml(results[1].reason?.message || "Не удалось загрузить готовые сборки.")}</p>`;
-            }
-        });
-    if (window.lucide) lucide.createIcons();
-</script>
+<footer class="footer"><span>PC Build Studio</span><span>Сокет и питание проверяются сервером · расчёт мощности — учебная оценка</span></footer>
 </body>
 </html>

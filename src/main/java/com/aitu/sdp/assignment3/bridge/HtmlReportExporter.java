@@ -1,9 +1,11 @@
 package com.aitu.sdp.assignment3.bridge;
 
 import com.aitu.sdp.assignment2.Computer;
+import org.springframework.stereotype.Component;
 
 import java.util.Map;
 
+@Component
 public class HtmlReportExporter implements ReportExporter {
     @Override
     public String exportHeader(String title) {
@@ -29,6 +31,29 @@ public class HtmlReportExporter implements ReportExporter {
                     .append("</td></tr>");
         }
         return body.toString();
+    }
+
+    /**
+     * Exports computer specifications together with caller-supplied diagnostic results.
+     */
+    public String exportDiagnosticReport(Computer computer, Map<String, String> diagnostics) {
+        if (computer == null) {
+            throw new IllegalArgumentException("Computer cannot be null");
+        }
+        if (diagnostics == null) {
+            throw new IllegalArgumentException("Diagnostics cannot be null");
+        }
+
+        StringBuilder report = new StringBuilder(exportHeader("System Stress Test Report"))
+                .append(exportBody(computer));
+        for (Map.Entry<String, String> diagnostic : diagnostics.entrySet()) {
+            report.append("<tr><th>")
+                    .append(escapeHtml(diagnostic.getKey()))
+                    .append("</th><td>")
+                    .append(escapeHtml(diagnostic.getValue()))
+                    .append("</td></tr>");
+        }
+        return report.append(exportFooter()).toString();
     }
 
     @Override

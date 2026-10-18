@@ -14,7 +14,10 @@ public abstract class ComputerOrderFactory {
     }
 
     public Computer orderComputer(String ram, String storage, Boolean hasRGB) {
-        System.out.println("Ordering computer with " + getClass().getSimpleName() + "...");
+        return orderComputer(ram, storage, null, hasRGB);
+    }
+
+    public Computer orderComputer(String ram, String storage, String coolingSystem, Boolean hasRGB) {
         ComputerBuilder builder = createBuilder();
         if (ram != null) {
             builder.ram(ram);
@@ -22,11 +25,12 @@ public abstract class ComputerOrderFactory {
         if (storage != null) {
             builder.storage(storage);
         }
+        if (coolingSystem != null) {
+            builder.coolingSystem(coolingSystem);
+        }
         if (hasRGB != null) {
             builder.withRGB(hasRGB);
         }
-        Computer computer = builder.build();
-        System.out.println("Computer order completed.");
-        return computer;
+        return builder.build();
     }
 }

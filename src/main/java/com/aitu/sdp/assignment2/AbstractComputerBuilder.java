@@ -122,7 +122,8 @@ abstract class AbstractComputerBuilder implements ComputerBuilder {
 
     private void validatePowerCompatibility() {
         int selectedPower = powerSupply.wattage();
-        int requiredPower = cpu.getTdpWatts() + gpu.getTdpWatts() + 150;
+        int requiredPower = PowerRequirementCalculator.requiredWatts(
+                cpu.getTdpWatts(), gpu.getTdpWatts());
         if (requiredPower > selectedPower) {
             throw new IncompatibleHardwareException("Power Supply (" + selectedPower + "W) is insufficient for "
                     + cpu.getModel() + " + " + gpu.getModel() + ". Minimum required: " + requiredPower + "W.");

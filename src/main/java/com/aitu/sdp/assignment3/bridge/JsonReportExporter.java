@@ -1,9 +1,11 @@
 package com.aitu.sdp.assignment3.bridge;
 
 import com.aitu.sdp.assignment2.Computer;
+import org.springframework.stereotype.Component;
 
 import java.util.Map;
 
+@Component
 public class JsonReportExporter implements ReportExporter {
     @Override
     public String exportHeader(String title) {
